@@ -6,3 +6,6 @@ data/
 
 # local kaggle deps
 segmentation_models_pytorch-0.5.0-py3-none-any.whl
+
+# macos
+.DS_Store
