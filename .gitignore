@@ -1,19 +1,13 @@
-# Data — too large for git
+# Data
 data/
 
-# Model weights — too large for git
+# Model weights, masks and feature files
 outputs/*.pth
-
-# Cached features
 outputs/*.npz
-outputs/*.csv
 
 # Python
 .venv/
-cmfd/
 __pycache__/
 *.pyc
 .DS_Store
-
-# Jupyter
 .ipynb_checkpoints/
