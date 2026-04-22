@@ -1,7 +1,7 @@
 [project]
 name = "scientific-image-forgery-detection"
 version = "0.1.0"
-description = "Add your description here"
+description = "Detecting copy-move forgeries in biomedical scientific images"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -15,4 +15,5 @@ dependencies = [
     "scipy>=1.17.1",
     "torch>=2.11.0",
     "torchvision>=0.26.0",
+    "tqdm>=4.67.3",
 ]
