@@ -27,7 +27,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from features import (
+from .features import (
     load_dataset, load_or_build_features, split,
     evaluate_and_save,
     RANDOM_SEED, CV_FOLDS, OUTPUT_DIR, FEATURE_NAMES,

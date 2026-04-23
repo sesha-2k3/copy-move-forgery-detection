@@ -1,15 +1,11 @@
 """
-Shared feature extraction pipeline for Models 1 and 2.
+Feature extraction pipeline for SVM and Random Forest.
 
-Both the SVM and Random Forest use the exact same pipeline:
-  1. Load images from authentic/ and forged/ subfolders
-  2. Extract overlapping 64x64 patches per image
-  3. Compute HOG + LBP + DCT descriptors per patch
-  4. Measure pairwise cosine similarity across spatially distant patch pairs
-  5. Compress the similarity distribution into a 34-dim feature vector
-
-Having this in one place means any change to the feature pipeline
-automatically applies to both models.
+1. Load images from authentic/ and forged/ subfolders
+2. Extract overlapping 64x64 patches per image
+3. Compute HOG + LBP + DCT descriptors per patch
+4. Measure pairwise cosine similarity across spatially distant patch pairs
+5. Compress the similarity distribution into a 34-dim feature vector
 """
 
 import time
@@ -33,7 +29,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from config import (
+from .config import (
     DATA_DIR, AUTHENTIC_DIR, FORGED_DIR, OUTPUT_DIR, CACHE_PATH,
     VALID_EXT,
     SAMPLES_PER_CLASS, RANDOM_SEED, CV_FOLDS,
@@ -48,10 +44,7 @@ warnings.filterwarnings("ignore")
 log = logging.getLogger(__name__)
 
 
-
-# ===========================================================================
 # Data loading
-# ===========================================================================
 
 def load_dataset(samples_per_class: int = SAMPLES_PER_CLASS,
                  seed: int = RANDOM_SEED) -> pd.DataFrame:
@@ -93,9 +86,7 @@ def load_dataset(samples_per_class: int = SAMPLES_PER_CLASS,
     return df
 
 
-# ===========================================================================
 # Patch extraction
-# ===========================================================================
 
 def extract_patches(image: np.ndarray,
                     patch_size: int = PATCH_SIZE,
@@ -118,9 +109,7 @@ def extract_patches(image: np.ndarray,
     return np.array(patches), np.array(coords)
 
 
-# ===========================================================================
 # Descriptors
-# ===========================================================================
 
 def compute_hog_descriptor(patch: np.ndarray) -> np.ndarray:
     """Histogram of Oriented Gradients — captures edge and gradient structure."""
@@ -160,9 +149,7 @@ def compute_patch_descriptor(patch: np.ndarray) -> np.ndarray:
     ])
 
 
-# ===========================================================================
-# Intra-image similarity → feature vector
-# ===========================================================================
+# Intra-image similarity -> feature vector
 
 def cosine_similarity_matrix(descriptors: np.ndarray,
                               patch_coords: np.ndarray,
@@ -212,7 +199,7 @@ def similarity_stats(sim_values: np.ndarray) -> np.ndarray:
 
 
 def image_to_feature_vector(image_path: Path) -> np.ndarray:
-    """Run the full pipeline on a single image → 34-dim feature vector."""
+    """Run the full pipeline on a single image -> 34-dim feature vector."""
     img = cv2.imread(str(image_path))
     if img is None:
         raise FileNotFoundError(f"Cannot read image: {image_path}")
@@ -255,9 +242,7 @@ def build_feature_matrix(df: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
     return np.vstack(X_list).astype(np.float32), np.array(y_list, dtype=np.int32)
 
 
-# ===========================================================================
 # Shared evaluation helper
-# ===========================================================================
 
 def evaluate_and_save(estimator, X_test: np.ndarray, y_test: np.ndarray,
                       model_name: str):
@@ -268,14 +253,14 @@ def evaluate_and_save(estimator, X_test: np.ndarray, y_test: np.ndarray,
     y_pred = estimator.predict(X_test)
     y_prob = estimator.predict_proba(X_test)[:, 1]
 
-    log.info("\n" + "=" * 60)
+    log.info("\n" + "-" * 60)
     log.info(f"{model_name.upper()} — FINAL TEST SET RESULTS")
-    log.info("=" * 60)
+    log.info("-" * 60)
     log.info(f"  F1      : {f1_score(y_test, y_pred):.4f}")
     log.info(f"  ROC-AUC : {roc_auc_score(y_test, y_prob):.4f}")
 
-    print(f"\nClassification Report — {model_name}:")
-    print(classification_report(y_test, y_pred,
+    log.info(f"\nClassification Report — {model_name}:")
+    log.info(classification_report(y_test, y_pred,
                                 target_names=["Authentic", "Forged"]))
 
     cm  = confusion_matrix(y_test, y_pred)
@@ -287,29 +272,29 @@ def evaluate_and_save(estimator, X_test: np.ndarray, y_test: np.ndarray,
     path = OUTPUT_DIR / f"{slug}_confusion_matrix.png"
     plt.savefig(path, dpi=150)
     plt.close()
-    log.info(f"Confusion matrix saved → {path}")
+    log.info(f"Confusion matrix saved to {path}")
 
 
 def load_or_build_features(df: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
     """
     Load features from cache (outputs/svm_features.npz) if available,
     otherwise extract from scratch and cache them.
-    This saves ~15 min of re-extraction when running Random Forest after SVM.
+    This saves re-extraction time when running Random Forest after SVM.
     """
     if CACHE_PATH.exists():
-        log.info(f"Loading cached features from {CACHE_PATH} …")
+        log.info(f"Loading cached features from {CACHE_PATH}...")
         data = np.load(CACHE_PATH)
         X, y = data["X"], data["y"]
         if len(X) == len(df):
-            log.info(f"Cache hit — X={X.shape}")
+            log.info(f"Cache hit - X={X.shape}")
             return X, y
-        log.warning("Cache size mismatch — re-extracting …")
+        log.warning("Cache size mismatch - re-extracting...")
 
-    log.info("Extracting features …")
+    log.info("Extracting features...")
     X, y = build_feature_matrix(df)
     OUTPUT_DIR.mkdir(exist_ok=True)
     np.savez_compressed(CACHE_PATH, X=X, y=y)
-    log.info(f"Features cached → {CACHE_PATH}")
+    log.info(f"Features cached in this path: {CACHE_PATH}")
     return X, y
 
 

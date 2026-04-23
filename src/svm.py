@@ -25,7 +25,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from features import (
+from .features import (
     load_dataset, load_or_build_features, split,
     evaluate_and_save,
     RANDOM_SEED, CV_FOLDS, OUTPUT_DIR,
@@ -95,15 +95,15 @@ def plot_gridsearch(grid_search: GridSearchCV):
 
 def save_predictions(grid_search: GridSearchCV,
                      X: np.ndarray, y: np.ndarray, df: pd.DataFrame):
-    """Save predicted labels + probabilities for all samples to CSV."""
-    best = grid_search.best_estimator_
-    best.fit(X, y)
+    best_pipe = grid_search.best_estimator_
+    probs = best_pipe.predict_proba(X)[:, 1]
+    preds = best_pipe.predict(X)
     out = df[["image_id", "label"]].copy()
-    out["pred_label"] = best.predict(X)
-    out["pred_prob"]  = best.predict_proba(X)[:, 1]
-    path = OUTPUT_DIR / "svm_predictions.csv"
-    out.to_csv(path, index=False)
-    log.info(f"Predictions saved → {path}")
+    out["pred_label"] = preds
+    out["pred_prob"]  = probs
+    out_path = OUTPUT_DIR / "svm_predictions.csv"
+    out.to_csv(out_path, index=False)
+    log.info(f"Predictions saved → {out_path}")
 
 
 def main():
