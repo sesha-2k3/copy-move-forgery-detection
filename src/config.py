@@ -13,6 +13,7 @@ MASK_DIR      = DATA_DIR / "train_masks"
 SUPP_AUTH     = DATA_DIR / "supplemental_images" / "authentic"
 SUPP_FORG     = DATA_DIR / "supplemental_images" / "forged"
 OUTPUT_DIR    = Path("outputs")
+CACHE_PATH    = OUTPUT_DIR / "svm_features.npz"
 PLOTS_DIR     = OUTPUT_DIR / "plots"
 PREDS_DIR     = OUTPUT_DIR / "predictions"
 
@@ -32,6 +33,24 @@ DCT_TOP_K         = 16
 TOP_K_MAXIMA      = 5
 FEATURE_DIM       = 4 + TOP_K_MAXIMA + 4 + 1 + 20
 CV_FOLDS          = 5
+# LBP
+LBP_RADIUS = 1
+LBP_POINTS = 8 * LBP_RADIUS
+LBP_METHOD = "uniform"
+
+# HOG
+HOG_ORIENTATIONS    = 9
+HOG_PIXELS_PER_CELL = (8, 8)
+HOG_CELLS_PER_BLOCK = (2, 2)
+
+# Feature names for Random Forest importance plot
+FEATURE_NAMES = (
+    ["mean", "variance", "skewness", "kurtosis"]
+    + [f"top_{i+1}_max" for i in range(TOP_K_MAXIMA)]
+    + ["p75", "p90", "p95", "p99"]
+    + ["high_sim_ratio"]
+    + [f"hist_bin_{i+1}" for i in range(20)]
+)
 
 # Gate (EfficientNet-B0)
 GATE_SAMPLES_PER_CLASS = 1200
