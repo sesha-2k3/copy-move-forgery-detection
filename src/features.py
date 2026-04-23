@@ -30,8 +30,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from .config import (
-    DATA_DIR, AUTHENTIC_DIR, FORGED_DIR, OUTPUT_DIR, CACHE_PATH,
-    VALID_EXT,
+    DATA_DIR, AUTHENTIC_DIR, FORGED_DIR, OUTPUT_DIR, PLOTS_DIR, PREDS_DIR,
+    CACHE_PATH, VALID_EXT,
     SAMPLES_PER_CLASS, RANDOM_SEED, CV_FOLDS,
     PATCH_SIZE, STRIDE,
     LBP_RADIUS, LBP_POINTS, LBP_METHOD,
@@ -269,7 +269,7 @@ def evaluate_and_save(estimator, X_test: np.ndarray, y_test: np.ndarray,
     ax.set_title(f"Confusion Matrix — {model_name} — Test Set")
     plt.tight_layout()
     slug = model_name.lower().replace(" ", "_")
-    path = OUTPUT_DIR / f"{slug}_confusion_matrix.png"
+    path = PLOTS_DIR / f"{slug}_confusion_matrix.png"
     plt.savefig(path, dpi=150)
     plt.close()
     log.info(f"Confusion matrix saved to {path}")

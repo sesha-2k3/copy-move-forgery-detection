@@ -27,10 +27,13 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+from .config import (
+    RANDOM_SEED, CV_FOLDS, OUTPUT_DIR, PLOTS_DIR, PREDS_DIR, FEATURE_NAMES,
+)
+
 from .features import (
     load_dataset, load_or_build_features, split,
     evaluate_and_save,
-    RANDOM_SEED, CV_FOLDS, OUTPUT_DIR, FEATURE_NAMES,
 )
 
 warnings.filterwarnings("ignore")
@@ -88,9 +91,10 @@ def plot_feature_importance(estimator):
     ax.set_ylabel("Mean Decrease in Impurity")
     ax.set_title("Random Forest — Top 20 Feature Importances")
     plt.tight_layout()
-    path = OUTPUT_DIR / "rf_feature_importance.png"
+    PLOTS_DIR.mkdir(exist_ok=True)
+    path = PLOTS_DIR / "rf_feature_importance.png"
     plt.savefig(path, dpi=150); plt.close()
-    log.info(f"Feature importance plot saved → {path}")
+    log.info(f"Feature importance plot saved to {path}")
 
     log.info("Top 10 features:")
     for rank, idx in enumerate(indices[:10], 1):
@@ -111,22 +115,23 @@ def plot_gridsearch(grid_search: GridSearchCV):
     ax.set_xlabel("n_estimators"); ax.set_ylabel("Mean CV F1")
     ax.set_title("Random Forest — GridSearch CV F1"); ax.legend()
     plt.tight_layout()
-    path = OUTPUT_DIR / "rf_gridsearch.png"
+    PLOTS_DIR.mkdir(exist_ok=True)
+    path = PLOTS_DIR / "rf_gridsearch.png"
     plt.savefig(path, dpi=150); plt.close()
-    log.info(f"GridSearch plot saved → {path}")
+    log.info(f"GridSearch plot saved to {path}")
 
 
 def save_predictions(grid_search: GridSearchCV,
                      X: np.ndarray, y: np.ndarray, df: pd.DataFrame):
     """Save predicted labels + probabilities for all samples to CSV."""
     best = grid_search.best_estimator_
-    best.fit(X, y)
     out = df[["image_id", "label"]].copy()
     out["pred_label"] = best.predict(X)
     out["pred_prob"]  = best.predict_proba(X)[:, 1]
-    path = OUTPUT_DIR / "rf_predictions.csv"
+    PREDS_DIR.mkdir(exist_ok=True)
+    path = PREDS_DIR / "rf_predictions.csv"
     out.to_csv(path, index=False)
-    log.info(f"Predictions saved → {path}")
+    log.info(f"Predictions saved to {path}")
 
 
 def main():
@@ -148,7 +153,7 @@ def main():
     plot_gridsearch(gs)
     save_predictions(gs, X, y, df)
 
-    log.info("Done. Outputs → outputs/")
+    log.info("Done. Outputs saved to outputs/")
 
 
 if __name__ == "__main__":

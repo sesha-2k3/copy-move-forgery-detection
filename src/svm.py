@@ -25,10 +25,12 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+from .config import (
+    RANDOM_SEED, CV_FOLDS, OUTPUT_DIR, PLOTS_DIR, PREDS_DIR,
+)
 from .features import (
     load_dataset, load_or_build_features, split,
     evaluate_and_save,
-    RANDOM_SEED, CV_FOLDS, OUTPUT_DIR,
 )
 
 warnings.filterwarnings("ignore")
@@ -88,9 +90,9 @@ def plot_gridsearch(grid_search: GridSearchCV):
         ax.set_xlabel("C"); ax.set_ylabel("gamma")
         ax.set_title(f"SVM GridSearch CV F1 — kernel={kernel}")
         plt.colorbar(im, ax=ax); plt.tight_layout()
-        path = OUTPUT_DIR / f"svm_gridsearch_{kernel}.png"
+        path = PLOTS_DIR / f"svm_gridsearch_{kernel}.png"
         plt.savefig(path, dpi=150); plt.close()
-        log.info(f"GridSearch heatmap saved → {path}")
+        log.info(f"GridSearch heatmap saved to {path}")
 
 
 def save_predictions(grid_search: GridSearchCV,
@@ -101,9 +103,9 @@ def save_predictions(grid_search: GridSearchCV,
     out = df[["image_id", "label"]].copy()
     out["pred_label"] = preds
     out["pred_prob"]  = probs
-    out_path = OUTPUT_DIR / "svm_predictions.csv"
+    out_path = PREDS_DIR / "svm_predictions.csv"
     out.to_csv(out_path, index=False)
-    log.info(f"Predictions saved → {out_path}")
+    log.info(f"Predictions saved to {out_path}")
 
 
 def main():
@@ -124,7 +126,7 @@ def main():
     plot_gridsearch(gs)
     save_predictions(gs, X, y, df)
 
-    log.info("Done. Outputs → outputs/")
+    log.info("Done. Outputs saved to outputs/")
 
 
 if __name__ == "__main__":
