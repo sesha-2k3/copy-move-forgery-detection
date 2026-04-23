@@ -2,9 +2,6 @@
 Model 1: SVM with RBF Kernel
 Copy-Move Forgery Detection in Biomedical Scientific Images
 
-Imports the shared feature pipeline from src/features.py.
-Only SVM-specific code lives here: the pipeline, param grid, and visualisation.
-
 Usage:
   python -m src.svm
 """

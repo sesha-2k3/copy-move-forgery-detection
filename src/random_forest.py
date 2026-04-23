@@ -2,9 +2,6 @@
 Model 2: Random Forest Classifier
 Copy-Move Forgery Detection in Biomedical Scientific Images
 
-Imports the shared feature pipeline from src/features.py.
-Only RF-specific code lives here: the pipeline, param grid, and feature importance plot.
-
 Reuses the cached feature matrix from SVM (outputs/svm_features.npz) if present —
 no re-extraction needed.
 
