@@ -1,6 +1,7 @@
 # Scientific Image Forgery Detection
 
 Pixel-level detection and segmentation of copy-move forgeries in biomedical scientific images.
+(Note: This is an ongoing competition, and the top performing team has an accuracy of 0.45)
 
 **CS 6140 — Machine Learning Final Project**  
 1. Seshadri Veeraraghavan Vidyalakshmi (NUID: 002519014)
