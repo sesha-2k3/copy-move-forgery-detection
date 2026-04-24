@@ -32,7 +32,7 @@ scientific-image-forgery-detection/
 │   ├── supplemental_images/
 │   └── test_images/
 ├── notebooks/
-│   └── model3.ipynb             # Kaggle notebook for Model 3
+│   └── efficient-net-b0-classifier.ipynb     # Kaggle notebook for Model 3
 ├── outputs/
 │   ├── plots/                   # all PNG outputs
 │   ├── predictions/             # all CSV outputs
