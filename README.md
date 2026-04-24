@@ -3,7 +3,8 @@
 Pixel-level detection and segmentation of copy-move forgeries in biomedical scientific images.
 
 **CS 6140 — Machine Learning Final Project**  
-Seshadri Veeraraghavan Vidyalakshmi, Jaisweta Naarrayanan
+1. Seshadri Veeraraghavan Vidyalakshmi (NUID: 002519014)
+2. Jaisweta Naarrayanan (NUID: 002553152)
 
 ---
 
