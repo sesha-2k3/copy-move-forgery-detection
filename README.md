@@ -37,8 +37,8 @@ scientific-image-forgery-detection/
 │   ├── plots/                   # all PNG outputs
 │   ├── predictions/             # all CSV outputs
 │   └── models/                  # saved models
-│       ├── gate_best.pth        # trained gate 
-│       └── segmenter_best.pth   # trained segmenter 
+│   │   ├── gate_best.pth        # trained gate 
+│   │   └── segmenter_best.pth   # trained segmenter 
 │   └── svm_features.npz         # cached feature matrix for SVM & RF 
 ├── src/
 │   ├── config.py                # hyperparameters and paths
@@ -48,7 +48,9 @@ scientific-image-forgery-detection/
 ├── model3_train.py              # Model 3 local training script
 ├── inference.py                 # run predictions on new images
 ├── requirements.txt
-└── pyproject.toml
+├── pyproject.toml
+├── segmentation_models_pytorch-0.5.0-py3-none-any.whl   # segmentation models pytorch dependecies for kaggle
+└── uv.lock       # uv locked dependencies
 ```
 
 ---
