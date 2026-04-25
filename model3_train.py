@@ -22,23 +22,6 @@ Training details
   - Loss:      BCE + Dice (handles severe class imbalance ~2-5% forged pixels)
   - Optimizer: AdamW + CosineAnnealingLR
   - Input:     512×512 RGB, Albumentations augmentation
-
-Usage
------
-  # Train both stages from scratch
-  python model3_train.py
-
-  # Resume gate from checkpoint
-  python model3_train.py --resume-gate
-
-  # Resume segmenter from checkpoint
-  python model3_train.py --resume-seg
-
-  # Skip gate training (gate_best.pth already exists), train segmenter only
-  python model3_train.py --seg-only
-
-  # Skip segmenter training, train gate only
-  python model3_train.py --gate-only
 """
 
 import argparse
@@ -85,7 +68,7 @@ from config import (
 logging.basicConfig(level=logging.INFO, format="%(asctime)s  %(message)s")
 log = logging.getLogger(__name__)
 
-# DEVICE SETUP
+# Setup
 
 def get_device() -> torch.device:
     """Pick the best available device: CUDA / MPS / CPU."""
@@ -98,9 +81,7 @@ def get_device() -> torch.device:
     log.info("Device: CPU")
     return torch.device("cpu")
 
-
-# DATA UTILITIES
-# Shared between gate and segmenter 
+# Utils
 
 def collect_pairs(
     authentic_dir: Path,
@@ -154,7 +135,7 @@ def split_pairs(
     return train, val, test
 
 
-# GATE — DATASET & TRANSFORMS
+# Gate - Dataset & Transforms
 
 class GateDataset(Dataset):
     """
@@ -202,7 +183,7 @@ def gate_transforms(train: bool) -> transforms.Compose:
     return transforms.Compose(ops)
 
 
-# GATE — MODEL
+# Gate - Model definition
 
 def build_gate_model() -> nn.Module:
     """
@@ -222,7 +203,7 @@ def build_gate_model() -> nn.Module:
     return model
 
 
-# GATE — TRAIN / EVAL LOOPS
+# Gate - Train / Eval Loops
 
 def gate_train_one_epoch(
     model: nn.Module,
@@ -379,7 +360,7 @@ def seg_transforms(train: bool):
     ])
 
 
-# SEGMENTER — MODEL
+# Model definition for segmenter
 
 def build_segmenter() -> nn.Module:
     """
@@ -403,19 +384,11 @@ def build_segmenter() -> nn.Module:
     )
 
 
-# SEGMENTER — LOSS FUNCTION
+# Loss function for segmenter
 
 class BCEDiceLoss(nn.Module):
     """
     Combined Binary Cross-Entropy + Dice loss.
-    BCE alone biases the model toward predicting all background when
-    forged pixels are only 2-5% of the image — it can get ~95% accuracy
-    without ever predicting a single forged pixel.
-
-    Dice loss directly measures region overlap and forces the model to
-    actually cover the forged region, not just get background right.
-
-    Together: BCE handles pixel-wise correctness, Dice handles spatial coverage.
     """
     def __init__(self, bce_weight: float = BCE_WEIGHT,
                  dice_weight: float = DICE_WEIGHT, smooth: float = 1e-6):
@@ -434,7 +407,7 @@ class BCEDiceLoss(nn.Module):
         return self.bce_weight * self.bce(logits, targets) + self.dice_weight * dice
 
 
-# SEGMENTER — METRICS
+# Metrics for segmenter
 
 def compute_seg_metrics(
     logits: torch.Tensor,
@@ -443,8 +416,6 @@ def compute_seg_metrics(
 ) -> dict[str, float]:
     """
     Compute Dice, IoU, pixel-precision, and pixel-recall for a batch.
-    Pixel accuracy is intentionally excluded — it is misleading under
-    severe class imbalance (predicting all background scores ~95%).
     """
     preds  = (torch.sigmoid(logits) >= threshold).float()
     smooth = 1e-6
