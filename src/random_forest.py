@@ -71,9 +71,8 @@ def tune(X: np.ndarray, y: np.ndarray) -> GridSearchCV:
 def plot_feature_importance(estimator):
     """
     Bar chart of top-20 features by mean decrease in impurity.
-    This is the key advantage of RF over SVM — it tells us which
-    descriptors (HOG/LBP/DCT/percentiles/histogram) matter most.
     """
+    
     rf          = estimator.named_steps["rf"]
     importances = rf.feature_importances_
     std         = np.std([t.feature_importances_ for t in rf.estimators_], axis=0)
