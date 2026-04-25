@@ -139,7 +139,7 @@ Once model weights are in `outputs/`, run inference on any image or folder:
 
 ```bash
 # Single image
-python inference.py --image data/train_images/forged/10.png
+python inference.py --image data/train_images/forged/598.png
 
 # Folder
 python inference.py --folder data/train_images/forged/
