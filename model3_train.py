@@ -803,8 +803,6 @@ def train_segmenter(device: torch.device, resume: bool = False):
     )
 
 
-# ENTRY POINT
-
 def main():
     parser = argparse.ArgumentParser(
         description="Train Model 3 — Gated Segmentation Network",
