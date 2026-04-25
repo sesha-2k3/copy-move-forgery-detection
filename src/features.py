@@ -157,10 +157,6 @@ def cosine_similarity_matrix(descriptors: np.ndarray,
     """
     Compute pairwise cosine similarity between all patches, keeping only
     pairs whose spatial distance >= min_distance.
-
-    Why filter by distance? Copy-move forgery creates high similarity
-    between *distant* patches. Nearby patches are naturally similar in any
-    image, so including them would drown out the forgery signal.
     """
     norms  = np.linalg.norm(descriptors, axis=1, keepdims=True)
     norms  = np.where(norms == 0, 1e-8, norms)
@@ -178,13 +174,6 @@ def cosine_similarity_matrix(descriptors: np.ndarray,
 def similarity_stats(sim_values: np.ndarray) -> np.ndarray:
     """
     Compress the similarity distribution into a fixed-length feature vector.
-
-    Returns a 34-dim vector:
-      [mean, variance, skewness, kurtosis,
-       top_5_maxima (5 values),
-       p75, p90, p95, p99,
-       high_sim_ratio,
-       20-bin histogram]
     """
     top_k_vals     = np.sort(sim_values)[::-1][:TOP_K_MAXIMA]
     percentiles    = np.percentile(sim_values, [75, 90, 95, 99])
